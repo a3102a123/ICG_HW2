@@ -51,7 +51,7 @@ vector<VertexAttribute> ball;
 
 // timer for FPS control
 clock_t Start, End;
-float speed = Rotate_Speed;
+float speed = 0;
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
@@ -161,7 +161,7 @@ void init() {
 	// viewing and modeling transformation
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(7.5, 5.0, 7.5,// eye
+	gluLookAt(7.5, 5.0, 10,// eye
 		0.0, 0.0, 0.0,     // center
 		0.0, 1.0, 0.0);    // up
 }
@@ -326,6 +326,13 @@ void drawModel(Object* model) {
 	glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
 
 	if (single_mode) {
+		// translate the pikachu position
+		glPushMatrix();
+			glScalef(5.0f, 5.0f, 5.0f);
+			glRotatef(25, 0, 1, 0);
+			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
+			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
+		glPopMatrix();
 		// render pikachu with its texture
 		glUniform1i(glGetUniformLocation(program, "texture"), 0);
 		glBindVertexArray(VAO[0]);
@@ -333,10 +340,10 @@ void drawModel(Object* model) {
 
 		// translate the PekoBall position
 		glPushMatrix();
-		glRotatef(0,1,0,0);
-		glTranslatef(4.0f, 0.0f, 0.0f);
-		glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
-		glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
+			glRotatef(0,1,0,0);
+			glTranslatef(3.0f, 0.0f, -3.0f);
+			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
+			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
 		glPopMatrix();
 
 		// render PekoBall with texture
@@ -344,6 +351,13 @@ void drawModel(Object* model) {
 		glDrawArrays(GL_TRIANGLE_STRIP, model->positions.size() / 3, ball.size());
 	}
 	else {
+		// translate the pikachu position
+		glPushMatrix();
+			glScalef(5.0f, 5.0f, 5.0f);
+			glRotatef(25, 0, 1, 0);
+			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
+			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
+		glPopMatrix();
 		// render pikachu with its texture
 		glUniform1i(glGetUniformLocation(program, "texture"), 0);
 		glBindVertexArray(VAO[0]);
@@ -351,8 +365,8 @@ void drawModel(Object* model) {
 
 		//translate the PekoBall position
 		glPushMatrix();
-			glRotatef(0, 1, 0, 0);
-			glTranslatef(4.0f, 0.0f, 0.0f);
+			glRotatef(45, 0, 1, 0);
+			glTranslatef(3.0f, 0.0f, -3.0f);
 			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
 			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
 		glPopMatrix();
@@ -400,7 +414,6 @@ void LoadTexture(unsigned int& texture, const char* tFileName, int i) {
 	{
 		cout << "Failed to load texture" << endl;
 	}
-	
 	stbi_image_free(data);
 }
 

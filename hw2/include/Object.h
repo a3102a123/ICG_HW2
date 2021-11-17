@@ -79,8 +79,9 @@ public:
 	//vector<FACE>			faceList;	// face List
 	size_t mNum = 0,fNum=0; //Number of material,face
 	vector<float> positions;
-	vector<float> normals;
 	vector<float> texcoords;
+
+	//vector<float> normals;
 
 	void LoadObj(std::string obj_file);
 	Object(const char* obj_file);

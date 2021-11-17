@@ -101,9 +101,9 @@ void Object::LoadObj(string obj_file)
 					i++;
 				}
 				//tmpVertex[j].nIndex = atoi(tmp.c_str());
-				normals.push_back(nList[atoi(tmp.c_str())].ptr[0]);
-				normals.push_back(nList[atoi(tmp.c_str())].ptr[1]);
-				normals.push_back(nList[atoi(tmp.c_str())].ptr[2]);
+				//normals.push_back(nList[atoi(tmp.c_str())].ptr[0]);
+				//normals.push_back(nList[atoi(tmp.c_str())].ptr[1]);
+				//normals.push_back(nList[atoi(tmp.c_str())].ptr[2]);
 				tmp = "";
 				j++;
 			}
