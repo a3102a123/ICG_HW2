@@ -62,7 +62,6 @@ class VertexAttribute {
 public:
 	Vertex position;
 	GLfloat texcoord[3];
-	//GLfloat normal[3];
 	void setPosition(float x, float y, float z) {
 		position.x = x;
 		position.y = y;
@@ -77,9 +76,4 @@ public:
 		texcoord[0] = u;
 		texcoord[1] = v;
 	}
-	//void setNormal(float x, float y, float z) {
-	//	normal[0] = x;
-	//	normal[1] = y;
-	//	normal[2] = z;
-	//}
 };

@@ -27,50 +27,41 @@ void idle();
 void shaderInit();
 void textureInit();
 void bindBufferMulti(Object* model);
-void bindBufferSingle(Object* model);
 void DrawSphere(float radius, float slice, float stack);
 void drawModel(Object* model);
 void LoadTexture(unsigned int& texture, const char* tFileName,int i);
 void Sleep(int ms);
 
-// using different method to buffer data, you can set "true" , "false" to see the result.
-bool single_mode = false;
-
 // feeling free to adjust below value to fit your computer efficacy.
 #define Rotate_Speed 1
 #define MAX_FPS 120
-
-Object* Pikachu = new Object("Pikachu.obj");
-unsigned int Pikachu_texture;
-unsigned int ball_texture;
-
-GLuint program;
-GLuint VAO[2], VBO[2];
-
-vector<VertexAttribute> ball;
 
 // timer for FPS control
 clock_t Start, End;
 float speed = 0;
 
+Object* Pikachu = new Object("Pikachu.obj");
+unsigned int Pikachu_texture;
+unsigned int ball_texture;
+
+vector<VertexAttribute> ball;
+
 int main(int argc, char** argv) {
+	// set up OpenGL & window
 	glutInit(&argc, argv);
 	glutInitWindowSize(700, 700);
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutCreateWindow("HW2");
 
+	// create & initial related data
 	DrawSphere(3, 60, 30);
 	glewInit();
 	shaderInit();
 	textureInit();
-	if (single_mode) {
-		bindBufferSingle(Pikachu);
-	}
-	else {
-		bindBufferMulti(Pikachu);
-	}
+	bindBufferMulti(Pikachu);
 
+	// bind OpenGL event function
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
@@ -114,22 +105,9 @@ void light()
 }
 
 void keyboard(unsigned char key, int x, int y) {
-	switch (key)
-	{
-	case 's':
-	{
-		if (speed > 0) {
-			speed = 0;
-		}
-		else {
-			speed = Rotate_Speed;
-		}
-		break;
-	}
-
-	default:
-		break;
-	}
+	// TODO : keyboard function , press key ¡¥s¡¦ to start/stop all models rotation around y axis.
+	// Hint : 
+	//		# The concept is as same as keyboard function in HW1
 }
 
 void display() {
@@ -167,114 +145,34 @@ void init() {
 }
 
 void shaderInit() {
-	GLuint vert = createShader("Shaders/texture.vert", "vertex");
-	GLuint frag = createShader("Shaders/texture.frag", "fragment");
-	program = createProgram(vert, frag);
-
+	// TODO : create the shader & program
+	// Hint : 
+	//		# create the shader file named "filename.vert" & "filename.frag" under the "/hw2/dll/Shaders/"
+	//		# use the function defined in shaer.h to create shader
 }
 
 void textureInit() {
 	glEnable(GL_TEXTURE_2D);
 	// bind Pikachu texture with GL_TEXTURE0
 	LoadTexture(Pikachu_texture, "Pikachu.png",0);
-	// bind Pokeball texture with GL_TEXTURE1 = (GL_TEXTURE0 + 1)
+	// bind Pokeball texture with GL_TEXTURE1
 	LoadTexture(ball_texture, "Pokeball.png",1);
 }
 
 void bindBufferMulti(Object* model) {
-	// create buffer & get buffer ID
-	glGenVertexArrays(2, VAO);
-	glGenBuffers(2, VBO);
-
-	glBindVertexArray(VAO[0]);
-
-	// array to store the infomation of model
-	vector<VertexAttribute> Pikachu_data;
-	VertexAttribute temp;
-	// store the vetex infomation of Pikachu
-	for (int i = 0; i < model->positions.size() / 3; i++) {
-		int idx = i * 3;
-		temp.setPosition(model->positions[idx], model->positions[idx + 1], model->positions[idx + 2]);
-		idx = i * 2;
-		temp.setTexcoord(model->texcoords[idx], model->texcoords[idx + 1]);
-		Pikachu_data.push_back(temp);
-	}
-
-	// rendering pikachu
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexAttribute) * Pikachu_data.size(), &Pikachu_data[0], GL_STATIC_DRAW);
-	// point to model vertex coordinate
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttribute), (void*)0);
-	// point to texture coordinate
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexAttribute), (void*)(3 * sizeof(float)));
-
-	// using another VAO to render PokeBall
-	glBindVertexArray(VAO[1]);
-
-	// array to store the infomation of model
-	vector<VertexAttribute> Ball_data;
-	// store the vetex infomation of PokeBall
-	for (int i = 0; i < ball.size(); i++) {
-		Ball_data.push_back(ball[i]);
-	}
-
-	// rendering PokeBall (this VAO point to another VBO)
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexAttribute) * Ball_data.size(), &Ball_data[0], GL_STATIC_DRAW);
-	// point to model vertex coordinate
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttribute), (void*)0);
-	// point to texture coordinate
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexAttribute), (void*)(3 * sizeof(float)));
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
-// Bind all model data in only one VAO 
-void bindBufferSingle(Object* model) {
-	// create buffer & get buffer ID
-	glGenVertexArrays(1, VAO);
-	glGenBuffers(1, VBO);
-
-	// bind the VAO
-	glBindVertexArray(VAO[0]);
-
-	// array to store the infomation of model
-	vector<VertexAttribute> data;
-	VertexAttribute temp;
-	// store the vetex infomation of Pikachu
-	for (int i = 0; i < model->positions.size() / 3; i++) {
-		int idx = i * 3;
-		temp.setPosition(model->positions[idx], model->positions[idx + 1], model->positions[idx + 2]);
-		idx = i * 2;
-		temp.setTexcoord(model->texcoords[idx], model->texcoords[idx + 1]);
-		data.push_back(temp);
-	}
-	// store the vetex infomation of PokeBall
-	for (int i = 0; i < ball.size(); i++) {
-		data.push_back(ball[i]);
-	}
-
-	// buffer the data of all model (Pikachu & sphere)
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexAttribute) * data.size(), &data[0], GL_STATIC_DRAW);
-	// point to model vertex coordinate
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttribute), (void*)0);
-	// point to texture coordinate
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexAttribute), (void*)(3 * sizeof(float)));
-
-	// unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	// TODO : use VAO & VBO to buffer the vertex data which will be passed to shader
+	// Hint :
+	//		# use "VertexAttribute" defined in Vertex.h to store the infomation of vertex needed in shader
+	//		# the Pikachu model data is stored in function paramete "model" (or using global variable "Pikachu")
+	//		# the pokeball vertex is stored in global variabl "ball"
+	//		# see Object class detail in "Object.h" to pick up needed data to buffer
 }
 
 void DrawSphere(float radius, float slice, float stack) {
+	// TODO : calculate the texture coordinate of sphere
+	// Hint : 
+	//		# read the code below to know how to iteratively compute the vertex position of sphere by sphere coordinate
+	//		# find the mathematical way to iteratively calculate the u , v textur coordinate of a vertex on sphere
 	float theta, phi, xy_step = 360 / slice, z_step = 180 / stack;
 	Vertex vert;
 	float u, v;
@@ -285,122 +183,35 @@ void DrawSphere(float radius, float slice, float stack) {
 			vert.y = radius * cos(theta * M_PI / 180) * cos(phi * M_PI / 180);
 			vert.z = radius * sin(phi * M_PI / 180);
 			temp.setPosition(vert);
-			vert.normalize();
-			u = atan2(vert.x, vert.z) / (2 * M_PI) + 0.5f;
-			v = asin(vert.y) / M_PI + 0.5f;
-			temp.setTexcoord(u, v);
+
 			ball.push_back(temp);
 
 			vert.x = radius * sin(theta * M_PI / 180) * cos((phi + z_step) * M_PI / 180);
 			vert.y = radius * cos(theta * M_PI / 180) * cos((phi + z_step) * M_PI / 180);
 			vert.z = radius * sin((phi + z_step) * M_PI / 180);
 			temp.setPosition(vert);
-			vert.normalize();
-			u = atan2(vert.x, vert.z) / (2 * M_PI) + 0.5f;
-			v = asin(vert.y) / M_PI + 0.5f;
-			temp.setTexcoord(u, v);
+
 			ball.push_back(temp);
 		}
 	}
 }
 
 void drawModel(Object* model) {
-	static float r = 0;
-	glRotatef(r += speed, 0, 1, 0);
-	glPushMatrix();
-	glScalef(5.0f, 5.0f, 5.0f);
-	// get projection & modelview matrix
-	GLfloat pmtx[16];
-	GLfloat mmtx[16];
-	glGetFloatv(GL_PROJECTION_MATRIX, pmtx);
-	glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
-	// get an integer that represents the location of a specific uniform variable within a program object(shader)
-	GLint pmatLoc = glGetUniformLocation(program, "Projection");
-	GLint mmatLoc = glGetUniformLocation(program, "ModelView");
-	glPopMatrix();
-
-	glUseProgram(program);
-	//input the modelview matrix into vertex shader
-	glUniformMatrix4fv(pmatLoc, 1, GL_FALSE, pmtx);
-	//input the rotation matrix into vertex shader
-	glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
-
-	if (single_mode) {
-		// translate the pikachu position
-		glPushMatrix();
-			glScalef(5.0f, 5.0f, 5.0f);
-			glRotatef(25, 0, 1, 0);
-			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
-			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
-		glPopMatrix();
-		// render pikachu with its texture
-		glUniform1i(glGetUniformLocation(program, "texture"), 0);
-		glBindVertexArray(VAO[0]);
-		glDrawArrays(GL_TRIANGLES, 0, model->positions.size() / 3);
-
-		// translate the PekoBall position
-		glPushMatrix();
-			glRotatef(0,1,0,0);
-			glTranslatef(3.0f, 0.0f, -3.0f);
-			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
-			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
-		glPopMatrix();
-
-		// render PekoBall with texture
-		glUniform1i(glGetUniformLocation(program, "texture"), 1);
-		glDrawArrays(GL_TRIANGLE_STRIP, model->positions.size() / 3, ball.size());
-	}
-	else {
-		// translate the pikachu position
-		glPushMatrix();
-			glScalef(5.0f, 5.0f, 5.0f);
-			glRotatef(25, 0, 1, 0);
-			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
-			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
-		glPopMatrix();
-		// render pikachu with its texture
-		glUniform1i(glGetUniformLocation(program, "texture"), 0);
-		glBindVertexArray(VAO[0]);
-		glDrawArrays(GL_TRIANGLES, 0, model->positions.size() / 3);
-
-		//translate the PekoBall position
-		glPushMatrix();
-			glRotatef(45, 0, 1, 0);
-			glTranslatef(3.0f, 0.0f, -3.0f);
-			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
-			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
-		glPopMatrix();
-
-		// render PekoBall with texture
-		glUniform1i(glGetUniformLocation(program, "texture"), 1);
-		glBindVertexArray(VAO[1]);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, ball.size());
-
-		// It's more flexible and easy for using . if you want to render another Pikachu ,
-		// you just need to bind the VAO which store the data of Pikachu.
-		// you don't need to remeber the start index of Pikachu in buffer. 
-		// 
-		//glPushMatrix();
-		//	glTranslatef(0.0f, 5.0f, 0.0f);
-		//	glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
-		//	glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
-		//glPopMatrix();
-		//glUniform1i(glGetUniformLocation(program, "texture"), 0);
-		//glBindVertexArray(VAO[0]);
-		//glDrawArrays(GL_TRIANGLES, 0, model->positions.size() / 3);
-	}
-
-	glBindVertexArray(0);
-	glUseProgram(0);
+	// TODO : draw the model on correct position & send modelview and projection matrix to shader
+	// Hint :
+	//		# move the model by glRotate,glTranslate , glScale , glPush , glPop ... and so on
+	//		# pass modelview matrix to shader after transformation
+	//		# use program , VAO , texture , "glDrawArrays" ... and so on to render model
 }
 
 // i indicate the texture unit number
 void LoadTexture(unsigned int& texture, const char* tFileName, int i) {
-	glActiveTexture(GL_TEXTURE0 + i);
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// TODO : generating the texture with texture unit
+	// Hint : 
+	//		# glActiveTexture() , glGenTextures() and so on ...
+	//		# GL_TEXTUREi = (GL_TEXTURE0 + i)
+	//      # make sure one texture unit only binds one texture
+	//		# It's different with VAO,VBO that texture don't need to unbind. (Just active different texture unit)
 
 	int width, height, nrChannels;
 	stbi_set_flip_vertically_on_load(true);
@@ -408,7 +219,9 @@ void LoadTexture(unsigned int& texture, const char* tFileName, int i) {
 
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	// TODO : use image data to generate the texture here
+	// Hint :
+	//		# glTexImage2D()
 	}
 	else
 	{
