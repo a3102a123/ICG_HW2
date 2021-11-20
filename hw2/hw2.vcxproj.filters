@@ -14,8 +14,4 @@
       <Filter>來源檔案</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="dll\Shaders\texture.frag" />
-    <None Include="dll\Shaders\texture.vert" />
-  </ItemGroup>
 </Project>

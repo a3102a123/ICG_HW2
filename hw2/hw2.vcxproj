@@ -22,10 +22,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="dll\Shaders\texture.frag" />
-    <None Include="dll\Shaders\texture.vert" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
