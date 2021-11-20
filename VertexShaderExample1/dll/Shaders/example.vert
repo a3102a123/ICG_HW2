@@ -6,6 +6,6 @@ uniform mat4 Projection;
 uniform mat4 ModelView;
 
 void main() {
+  // the final rendered position of vertex
   gl_Position = Projection * ModelView * vec4(position, 1.0);
-
 }
