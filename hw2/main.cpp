@@ -307,8 +307,6 @@ void DrawSphere(float radius, float slice, float stack) {
 void drawModel(Object* model) {
 	static float r = 0;
 	glRotatef(r += speed, 0, 1, 0);
-	glPushMatrix();
-	glScalef(5.0f, 5.0f, 5.0f);
 	// get projection & modelview matrix
 	GLfloat pmtx[16];
 	GLfloat mmtx[16];
@@ -317,7 +315,6 @@ void drawModel(Object* model) {
 	// get an integer that represents the location of a specific uniform variable within a program object(shader)
 	GLint pmatLoc = glGetUniformLocation(program, "Projection");
 	GLint mmatLoc = glGetUniformLocation(program, "ModelView");
-	glPopMatrix();
 
 	glUseProgram(program);
 	//input the modelview matrix into vertex shader
@@ -340,7 +337,7 @@ void drawModel(Object* model) {
 
 		// translate the PekoBall position
 		glPushMatrix();
-			glRotatef(0,1,0,0);
+			glRotatef(45,0,1,0);
 			glTranslatef(3.0f, 0.0f, -3.0f);
 			glGetFloatv(GL_MODELVIEW_MATRIX, mmtx);
 			glUniformMatrix4fv(mmatLoc, 1, GL_FALSE, mmtx);
