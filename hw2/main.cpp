@@ -26,7 +26,7 @@ void idle();
 
 void shaderInit();
 void textureInit();
-void bindBufferMulti(Object* model);
+void bindBuffer(Object* model);
 void DrawSphere(float radius, float slice, float stack);
 void drawModel(Object* model);
 void LoadTexture(unsigned int& texture, const char* tFileName,int i);
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 	glewInit();
 	shaderInit();
 	textureInit();
-	bindBufferMulti(Pikachu);
+	bindBuffer(Pikachu);
 
 	// bind OpenGL event function
 	glutDisplayFunc(display);
@@ -159,7 +159,7 @@ void textureInit() {
 	LoadTexture(ball_texture, "Pokeball.png",1);
 }
 
-void bindBufferMulti(Object* model) {
+void bindBuffer(Object* model) {
 	// TODO : use VAO & VBO to buffer the vertex data which will be passed to shader
 	// Hint :
 	//		# use "VertexAttribute" defined in Vertex.h to store the infomation of vertex needed in shader
@@ -197,7 +197,7 @@ void DrawSphere(float radius, float slice, float stack) {
 }
 
 void drawModel(Object* model) {
-	// TODO : draw the model on correct position & send modelview and projection matrix to shader
+	// TODO : draw all the models on correct position & send modelview and projection matrix to shader
 	// Hint :
 	//		# move the model by glRotate,glTranslate , glScale , glPush , glPop ... and so on
 	//		# pass modelview matrix to shader after transformation
